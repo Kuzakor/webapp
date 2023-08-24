@@ -18,6 +18,13 @@ mod user_handling;
 
 
 /* Static sites */
+#[get("/")]
+fn index() -> Template 
+{
+    Template::render("index", context! {})
+}
+
+
 #[get("/register")]
 fn register() -> Template 
 {
@@ -99,7 +106,7 @@ fn login_user(login_form: Form<LoginForm<'_>>) -> Template
 fn rocket() -> _ 
 {
     rocket::build()
-    .mount("/", routes![register, login, register_user, login_user])
+    .mount("/", routes![index, register, login, register_user, login_user])
     .mount("/static", FileServer::from("static_files"))
     .attach(Template::fairing())
 }

@@ -11,6 +11,7 @@
 
     <!-- Main css -->
     <link rel="stylesheet" href="static/css/login_register_page/style.css">
+    <link rel="stylesheet" href="static/css/index/bootstrap.css">
 </head>
 <body>
 
