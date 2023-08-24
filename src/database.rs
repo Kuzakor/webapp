@@ -2,16 +2,25 @@
 use sled::*;
 
 
-pub fn connect_to_database() -> Db
-{
-    let database: sled::Db = sled::open("/tmp/test").unwrap();
-    database
+pub enum DatabaseType {
+    Users
 }
 
-pub fn get_data_form_database(key: &dyn AsRef<[u8]>) -> Option<IVec>
+
+pub fn connect_to_database(which: DatabaseType) -> Db
 {
-    let connection = connect_to_database();
+    match which {
+        DatabaseType::Users => sled::open("databases/users").unwrap(),
+        _ => panic!("No database specified")
+    }
+
+}
+
+pub fn get_data_form_database(key: &dyn AsRef<[u8]>, database_type:DatabaseType) -> Option<IVec>
+{
+    let connection = connect_to_database(database_type);
     let value = connection.get(key);
+
     match value 
     {
         Err(error) => 

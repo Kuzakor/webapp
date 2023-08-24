@@ -1,22 +1,27 @@
+/* Rocket & Tera */
 #[macro_use] extern crate rocket;
 extern crate tera;
+/* ------------ */
+
+/* Rocket libralies */
 use rocket_dyn_templates::Template;
 use rocket_dyn_templates::context;
 use rocket::fs::FileServer;
 use rocket::form::Form;
-use rocket::http::RawStr;
-
-use user_handling::get_user_from_databse;
-use user_handling::get_user_uuid_by_username;
+/* ------------- */
 
 
+/* server rust files */
 mod database;
 mod user_handling;
+/* --------------- */
 
+
+/* Static sites */
 #[get("/register")]
 fn register() -> Template 
 {
-    Template::render("index", context! {})
+    Template::render("register", context! {})
 }
 
 #[get("/login")]
@@ -24,6 +29,7 @@ fn login() -> Template
 {
     Template::render("login", context! {})
 }
+/* ---------------------------- */
 
 /* New user registration */
 #[derive(FromForm)]
@@ -38,21 +44,25 @@ struct RegisterForm<'r>
 
 
 #[post("/register", data = "<register_form>")]
-fn register_user(register_form: Form<RegisterForm<'_>>)
+fn register_user(register_form: Form<RegisterForm<'_>>) -> Template
 {
     let name = String::from(register_form.name);
     let email = String::from(register_form.email);
     let pass = String::from(register_form.pass);
     let re_pass = String::from(register_form.re_pass);
-    match pass == re_pass {
-        false => println!("Passwords don't match"),
-        true => println!("Created user {:?}", user_handling::register_new_user(name, email, pass))
+
+    if !(pass == re_pass) 
+    {
+        return Template::render("login_register_response", context! {formtype:"Sign up",  response: "Passwords don't match"});
     }
     
+    user_handling::register_new_user(name, email, pass);
+    Template::render("login_register_response", context! {formtype:"Sign up", response: "Succesfully registered new account"})
 }
 
 /*--------------------------------------- */
 
+/* Logining in */
 #[derive(FromForm)]
 struct LoginForm<'r> 
 {
@@ -61,29 +71,30 @@ struct LoginForm<'r>
 }
 
 #[post("/login", data = "<login_form>")]
-fn login_user(login_form: Form<LoginForm<'_>>)
+fn login_user(login_form: Form<LoginForm<'_>>) -> Template
 {
     let name = String::from(login_form.name);
     let pass = String::from(login_form.pass);
     
-    let id = get_user_uuid_by_username(name);
+    let id = user_handling::get_user_uuid_by_username(name);
 
     if id == None 
     {
-        return ()
+        return Template::render("login_register_response", context! {formtype:"Sign in", response: "No such user"})
     }
 
-    let user = get_user_from_databse(id.unwrap());
+    let user = user_handling::get_user_from_databse(id.unwrap());
 
-    match user.password == pass {
-        false => println!("Wrong password"),
-        true => println!("succesfully logged in as {:?}", user)
+    match user.password == pass 
+    {
+        false => Template::render("login_register_response", context! {formtype:"Sign in", response: "Wrong password"}),
+        true => Template::render("login_register_response", context! {formtype:"Sign in", response: "Succesfully logged in"})
     }
 
 }  
+/* -------------------------------------------- */
 
-
-
+/* Launching the server */
 #[launch]
 fn rocket() -> _ 
 {
@@ -92,4 +103,4 @@ fn rocket() -> _
     .mount("/static", FileServer::from("static_files"))
     .attach(Template::fairing())
 }
-
+/* ---------------- */
