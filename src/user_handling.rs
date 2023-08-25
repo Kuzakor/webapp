@@ -1,5 +1,5 @@
 use core::panic;
-use crate::database::{self, get_string_from_binary};
+use crate::database;
 use uuid::Uuid;
 //use bitcode::{encode, decode};
 use sled::*;
@@ -30,7 +30,7 @@ pub fn get_user_uuid_by_username(username: String) -> Option<String>
     let uuid_binary = database::get_data_form_database(&username, database::DatabaseType::Users);
     match uuid_binary {
         None => None,
-        Some(uuid_binary) => Some(get_string_from_binary(uuid_binary))
+        Some(uuid_binary) => Some(database::get_string_from_binary(uuid_binary))
     }
 
 }   

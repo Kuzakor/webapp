@@ -6,7 +6,7 @@
     <title>Bootstrap demo</title>
     <link rel="stylesheet" href="static/css/index/bootstrap.css">
   </head>
-  <body>
+  
 
     <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
         <div class="container-fluid">
@@ -50,32 +50,26 @@
           justify-content: center;
         }
       </style>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <div class="centered-text">
-      <h1 text-align="center" vertical-align="middle">Welcome to Rock, Paper & Scissors online!</h1>
+      </div>
+        <div class="centered-text">
+      <img src=static/images/index/background.png>
         </div>
       <div class="centered-text">
-
+      <h1 text-align="center" vertical-align="middle">Stocker</h1>
+        </div>
+        <div class="centered-text">
+      <h2 text-align="center" vertical-align="middle">A simple multiplayer trading game</h2>
+        </div>
+      <div class="centered-text">
         <a href="/register">
           <button type="button" class="btn btn-primary btn-lg" >Get started</button>
        </a>
        
+        
        
       </div>
 
-
-
+      
 
 
 
