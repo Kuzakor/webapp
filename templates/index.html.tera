@@ -10,7 +10,7 @@
 
     <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Rock Paper and Sciccors online</a>
+          <a class="navbar-brand" href="#">Stocker</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -25,7 +25,7 @@
                 <a class="nav-link" href="/register">Register</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link" href="{{login_button_get_request}}">{{login_button}}</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/about">About</a>
@@ -50,23 +50,25 @@
           justify-content: center;
         }
       </style>
+
+      <div>
       </div>
         <div class="centered-text">
-      <img src=static/images/index/background.png>
+      <img src=static/images/index/background.jpg>
         </div>
       <div class="centered-text">
       <h1 text-align="center" vertical-align="middle">Stocker</h1>
         </div>
         <div class="centered-text">
-      <h2 text-align="center" vertical-align="middle">A simple multiplayer trading game</h2>
+      <h2 text-align="center" vertical-align="middle">{{subtitle}}</h2>
         </div>
       <div class="centered-text">
-        <a href="/register">
-          <button type="button" class="btn btn-primary btn-lg" >Get started</button>
+        <a href="{{button_post_request}}">
+          <button type="button" class="btn btn-primary btn-lg" >{{button_name}}</button>
        </a>
        
         
-       
+       </div>
       </div>
 
       
