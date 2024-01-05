@@ -4,18 +4,18 @@ extern crate rocket;
 extern crate tera;
 /* ------------ */
 
-/* Rocket libralies */
+/* Rocket libraries */
 use rocket::form::Form;
 use rocket::fs::FileServer;
-use rocket::http::hyper::header::TE;
 use rocket::http::{Cookie, CookieJar};
 use rocket_dyn_templates::context;
 use rocket_dyn_templates::Template;
+
 /* ------------- */
 
 /* server rust files */
 mod database;
-mod user_handling;
+mod data_handling;
 /* --------------- */
 
 /* Static sites */
@@ -63,8 +63,8 @@ fn login(cookies: &CookieJar<'_>) -> Template {
 /* -------------- */
 
 /* Log out */
-#[get("/logout")] 
-fn logout(cookies: &CookieJar<'_>) -> Template{
+#[get("/logout")]
+fn logout(cookies: &CookieJar<'_>) -> Template {
     cookies.remove(Cookie::named("uuid"));
     Template::render("index", context! {
         button_post_request: "/register",
@@ -79,12 +79,8 @@ fn logout(cookies: &CookieJar<'_>) -> Template{
 /* Look for a game */
 #[get("/search_for_game")]
 fn search_for_a_game() -> Template {
-    Template::render("game_looking", context!{})
-
+    Template::render("game_looking", context! {})
 }
-
-
-
 /* ---------------------------- */
 
 /* New user registration */
@@ -110,7 +106,7 @@ fn register_user(register_form: Form<RegisterForm<'_>>) -> Template {
         );
     }
 
-    user_handling::register_new_user(name, email, pass);
+    data_handling::User::new(name, email, pass);
 
     Template::render(
         "login_register_response",
@@ -131,7 +127,7 @@ struct LoginForm<'r> {
 fn login_user(login_form: Form<LoginForm<'_>>, cookies: &CookieJar<'_>) -> Template {
     let name = String::from(login_form.name);
     let pass = String::from(login_form.pass);
-    let id = user_handling::get_user_uuid_by_username(name);
+    let id = data_handling::User::get_uuid_by_username(name);
 
     if id.is_none() {
         return Template::render(
@@ -140,20 +136,16 @@ fn login_user(login_form: Form<LoginForm<'_>>, cookies: &CookieJar<'_>) -> Templ
         );
     }
 
-    let user = user_handling::get_user_from_databse(id.unwrap());
+    let user = data_handling::User::get_from_databse(id.unwrap());
 
-    if user.password != pass {
-        return Template::render(
-            "login_register_response",
-            context! {formtype:"Log in", response: "Wrong password"},
-        );
+    let mut context_response = "Succesfully logged in";
+    match user.password == pass {
+        true => cookies.add(Cookie::build("uuid", user.uuid).path("/").finish()),
+        false => context_response = "Wrong password"
     }
-
-    let cookie = Cookie::build("uuid", user.uuid).path("/").finish();
-    cookies.add(cookie);
     Template::render(
         "login_register_response",
-        context! {formtype:"Log in", response: "Succesfully logged in"},
+        context! {formtype:"Log in", response: context_response},
     )
 }
 
@@ -162,10 +154,10 @@ fn login_user(login_form: Form<LoginForm<'_>>, cookies: &CookieJar<'_>) -> Templ
 
 /* Non-web functions */
 
-pub fn logged_in_user(cookies: &CookieJar<'_>) -> Option<user_handling::User>{
+pub fn logged_in_user(cookies: &CookieJar<'_>) -> Option<data_handling::User> {
     let cookie = cookies.get("uuid");
     if let Some(cookie) = cookie {
-        return Some(user_handling::get_user_from_databse(String::from(cookie.value())));
+        return Some(data_handling::User::get_from_databse(String::from(cookie.value())));
     }
     None
 }
@@ -177,12 +169,9 @@ pub fn logged_in_user(cookies: &CookieJar<'_>) -> Option<user_handling::User>{
 /* Launching the server */
 #[launch]
 fn rocket() -> _ {
-    rocket::build()
-        .mount(
-            "/",
-            routes![index, register, login, logout, search_for_a_game, register_user, login_user],
-        )
-        .mount("/static", FileServer::from("static_files"))
-        .attach(Template::fairing())
+    rocket::build().mount(
+        "/",
+        routes![index, register, login, logout, search_for_a_game, register_user, login_user],
+    ).mount("/static", FileServer::from("static_files")).attach(Template::fairing())
 }
 /* ---------------- */

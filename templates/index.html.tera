@@ -55,11 +55,15 @@
       </div>
         <div class="centered-text">
       <img src=static/images/index/background.jpg>
+
         </div>
       <div class="centered-text">
       <h1 text-align="center" vertical-align="middle">Stocker</h1>
+
         </div>
+          <p text-align="center" vertical-align="middle" >This site uses cookies, using it means you agree to it</p>
         <div class="centered-text">
+
       <h2 text-align="center" vertical-align="middle">{{subtitle}}</h2>
         </div>
       <div class="centered-text">
