@@ -2,8 +2,6 @@ use crate::database;
 use core::panic;
 use uuid::Uuid;
 //use bitcode::{encode, decode};
-use sled::*;
-use crate::database::DatabaseType;
 
 #[derive(bitcode::Encode, bitcode::Decode, Debug)]
 pub struct User {
